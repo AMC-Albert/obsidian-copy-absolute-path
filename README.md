@@ -6,6 +6,7 @@ A simple Obsidian plugin that allows you to copy the absolute file path of any f
 
 Adds a new context menu item to files; `Copy absolute path` that copies the full file system path to the file.
 
-- **Right-click context menu**: Right-click on any file in the file explorer to copy its absolute path
-- **Command palette**: Use the command "Copy absolute path of current file" to copy the path of the currently active file
-- **Cross-platform support**: Works on Windows, macOS, and Linux
+- **Right-click context menu**: Right-click on any file or folder in the file explorer to copy its absolute path.
+- **Command palette**:
+    - **`Copy absolute path of active file`**: Copies the absolute path of the currently open and active file.
+    - **`Copy path of focused item (File Explorer)`**: Copies the absolute path of the file or folder currently focused (highlighted) in the File Explorer pane. This command is designed to be safely assigned to a shortcut like `Ctrl+C` (or `Cmd+C` on macOS). It will only activate if your mouse is hovering over the File Explorer and an item is focused. This prevents it from interfering with the normal `Ctrl+C` behavior for copying text in the editor or other panes.

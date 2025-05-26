@@ -3,8 +3,9 @@
 	"name": "Copy Absolute Path",
 	"version": "0.1.1",
 	"minAppVersion": "1.8.10",
-	"description": "Copy the absolute file path of any file in your vault to the clipboard.",
-	"author": "Albert",
-	"authorUrl": "",
-	"isDesktopOnly": false
+	"description": "Copy the system absolute path of files and folders to the clipboard.",
+	"author": "Albert O'Shea",
+	"authorUrl": "https://github.com/AMC-Albert",
+	"fundingUrl": "https://github.com/sponsors/AMC-Albert",
+	"isDesktopOnly": true
 }
