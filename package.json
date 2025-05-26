@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-copy-absolute-path",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"description": "Copy the absolute file path of any file in your vault to the clipboard.",
 	"main": "main.js",
 	"scripts": {
