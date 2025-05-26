@@ -1,7 +1,7 @@
 {
 	"id": "copy-absolute-path",
 	"name": "Copy Absolute Path",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"minAppVersion": "1.8.10",
 	"description": "Copy the absolute file path of any file in your vault to the clipboard.",
 	"author": "Albert",
