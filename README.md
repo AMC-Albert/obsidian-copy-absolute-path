@@ -1,10 +1,10 @@
 # Copy Absolute Path
 
-A simple Obsidian plugin that allows you to copy the absolute file path of any file in your vault to the clipboard.
+A simple Obsidian plugin that allows you to copy the absolute system path of files or folders in your vault to the clipboard.
 
 ## Features
 
-Adds a new context menu item to files; `Copy absolute path` that copies the full file system path to the file.
+Adds a new context menu item to files; `Copy absolute path` that copies the full system path to the file or folder.
 
 - **Right-click context menu**: Right-click on any file or folder in the file explorer to copy its absolute path.
 - **Command palette**:
