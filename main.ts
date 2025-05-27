@@ -123,22 +123,60 @@ export default class CopyAbsolutePathPlugin extends Plugin {
 		// Plugin cleanup is handled automatically by Obsidian
 	}
 
-	getFocusedItem(): TAbstractFile | null { 
-		// Get the focused element in the file explorer (files or folders)
-		const focusedElement = document.querySelector('.tree-item-self.has-focus .nav-file-title, .nav-file-title.has-focus, .tree-item-self.has-focus .nav-folder-title, .nav-folder-title.has-focus');
-		
-		if (!focusedElement) return null;
-		
-		// Get the file path from the focused element
-		const filePath = this.getFilePathFromElement(focusedElement as HTMLElement);
-		
-		if (filePath) {
-			const fileOrFolder = this.app.vault.getAbstractFileByPath(filePath);
-			if (fileOrFolder) return fileOrFolder;
+	getFocusedItem(): TAbstractFile | null {
+		const fileSelectors = [
+			'.tree-item-self.has-focus .nav-file-title',
+			'.nav-file-title.has-focus'
+		];
+		const folderSelectors = [
+			'.tree-item-self.has-focus .nav-folder-title',
+			'.nav-folder-title.has-focus'
+		];
+
+		const focusedFileElements = Array.from(document.querySelectorAll(fileSelectors.join(', '))) as HTMLElement[];
+		const focusedFolderElements = Array.from(document.querySelectorAll(folderSelectors.join(', '))) as HTMLElement[];
+
+		let targetElement: HTMLElement | null = null;
+
+		// 1. Prioritize hovered focused file
+		for (const el of focusedFileElements) {
+			if (el.matches(':hover')) {
+				targetElement = el;
+				break;
+			}
 		}
+
+		// 2. If no hovered file, prioritize hovered focused folder
+		if (!targetElement) {
+			for (const el of focusedFolderElements) {
+				if (el.matches(':hover')) {
+					targetElement = el;
+					break;
+				}
+			}
+		}
+
+		// 3. If no hovered item, fallback to the first focused file (maintaining file-over-folder priority)
+		if (!targetElement && focusedFileElements.length > 0) {
+			targetElement = focusedFileElements[0];
+		}
+
+		// 4. If still no target (no hovered item, no focused file), fallback to the first focused folder
+		if (!targetElement && focusedFolderElements.length > 0) {
+			targetElement = focusedFolderElements[0];
+		}
+
+		if (targetElement) {
+			const filePath = this.getFilePathFromElement(targetElement);
+			if (filePath) {
+				const fileOrFolder = this.app.vault.getAbstractFileByPath(filePath);
+				if (fileOrFolder) return fileOrFolder;
+			}
+		}
+
 		return null;
 	}
-	
+
 	getFilePathFromElement(element: HTMLElement): string | null {
 		// Try to get the file path from various possible data attributes
 		let filePath = element.getAttribute('data-path');
