@@ -36,7 +36,16 @@ export default class CopyAbsolutePathPlugin extends Plugin {
 				const isRenaming = !!document.querySelector('.is-being-renamed');
 
 				if (!isExplorerHovered || isRenaming) {
-					return false;
+					// If not hovering explorer or renaming, try to perform default text copy
+					if (!checking) { // Only if the command is actually being executed
+						const selection = document.getSelection();
+						if (selection && selection.toString().length > 0) {
+							navigator.clipboard.writeText(selection.toString()).catch(err => {
+								console.error('Fallback text copy failed:', err);
+							});
+						}
+					}
+					return false; // Prevent this command from proceeding
 				}
 
 				let itemToCopy: TAbstractFile | null = this.getFocusedItem();
@@ -56,7 +65,45 @@ export default class CopyAbsolutePathPlugin extends Plugin {
 				return false;
 			}
 		});
+
+		// Removed previous attempts to add context menu to vault switcher
+
+		this.app.workspace.onLayoutReady(() => {
+			const vaultSwitcherElement = document.querySelector('.workspace-drawer-vault-switcher');
+			if (vaultSwitcherElement) {
+				this.registerDomEvent(vaultSwitcherElement as HTMLElement, 'contextmenu', (evt: MouseEvent) => {
+					evt.preventDefault(); // Prevent default/Obsidian's menu for this element
+
+					const menu = new Menu();
+					menu.addItem((item) => {
+						item
+							.setTitle('Copy vault absolute path')
+							.setIcon('copy')
+							.setSection('action')
+							.onClick(async () => {
+								const adapter = this.app.vault.adapter;
+								if (adapter instanceof FileSystemAdapter) {
+									const vaultPath = adapter.getBasePath();
+									try {
+										await navigator.clipboard.writeText(vaultPath);
+										new Notice(`Copied vault path: ${vaultPath}`);
+									} catch (err) {
+										console.error('Failed to copy vault path:', err);
+										new Notice('Failed to copy vault path to clipboard.');
+									}
+								} else {
+									new Notice('Cannot get vault path: Vault is not using a file system adapter.');
+								}
+							});
+					});
+					menu.showAtMouseEvent(evt);
+				});
+			} else {
+				console.warn('Copy Absolute Path Plugin: .workspace-drawer-vault-switcher element not found.');
+			}
+		});
 	}
+
 	async copyAbsolutePath(file: TAbstractFile) {
 		try {
 			let adapter = this.app.vault.adapter;
