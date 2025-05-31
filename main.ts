@@ -68,37 +68,39 @@ export default class CopyAbsolutePathPlugin extends Plugin {
 
 		// Add context menu to the root folder in the file explorer
 		this.app.workspace.onLayoutReady(() => {
-			const rootFolderElement = document.querySelector('.tree-item.nav-folder.oz-explorer-root-folder');
-			if (rootFolderElement) {
-				this.registerDomEvent(rootFolderElement as HTMLElement, 'contextmenu', (evt: MouseEvent) => {
-					evt.preventDefault();
-					const menu = new Menu();
-					menu.addItem((item) => {
-						item
-							.setTitle('Copy absolute path')
-							.setIcon('copy')
-							.setSection('action')
-							.onClick(async () => {
-								const adapter = this.app.vault.adapter;
-								if (adapter instanceof FileSystemAdapter) {
-									const vaultPath = adapter.getBasePath();
-									try {
-										await navigator.clipboard.writeText(vaultPath);
-										new Notice(`Copied path: ${vaultPath}`);
-									} catch (err) {
-										console.error('Failed to copy path:', err);
-										new Notice('Failed to copy path to clipboard.');
+			setTimeout(() => {
+				const rootFolderElement = document.querySelector('.tree-item.nav-folder.oz-explorer-root-folder');
+				if (rootFolderElement) {
+					this.registerDomEvent(rootFolderElement as HTMLElement, 'contextmenu', (evt: MouseEvent) => {
+						evt.preventDefault();
+						const menu = new Menu();
+						menu.addItem((item) => {
+							item
+								.setTitle('Copy absolute path')
+								.setIcon('copy')
+								.setSection('action')
+								.onClick(async () => {
+									const adapter = this.app.vault.adapter;
+									if (adapter instanceof FileSystemAdapter) {
+										const vaultPath = adapter.getBasePath();
+										try {
+											await navigator.clipboard.writeText(vaultPath);
+											new Notice(`Copied path: ${vaultPath}`);
+										} catch (err) {
+											console.error('Failed to copy path:', err);
+											new Notice('Failed to copy path to clipboard.');
+										}
+									} else {
+										new Notice('Cannot get path: vault is not using file system adapter');
 									}
-								} else {
-									new Notice('Cannot get path: vault is not using file system adapter');
-								}
-							});
+								});
+						});
+						menu.showAtMouseEvent(evt);
 					});
-					menu.showAtMouseEvent(evt);
-				});
-			} else {
-				console.warn('Copy Absolute Path Plugin: .tree-item.nav-folder.oz-explorer-root-folder element not found.');
-			}
+				} else {
+					console.warn('Copy Absolute Path Plugin: .tree-item.nav-folder.oz-explorer-root-folder element not found.');
+				}
+			}, 500); // 500ms delay before registering the context menu event
 		});
 	}
 
