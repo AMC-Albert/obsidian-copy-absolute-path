@@ -66,18 +66,16 @@ export default class CopyAbsolutePathPlugin extends Plugin {
 			}
 		});
 
-		// Removed previous attempts to add context menu to vault switcher
-
+		// Add context menu to the root folder in the file explorer
 		this.app.workspace.onLayoutReady(() => {
-			const vaultSwitcherElement = document.querySelector('.workspace-drawer-vault-switcher');
-			if (vaultSwitcherElement) {
-				this.registerDomEvent(vaultSwitcherElement as HTMLElement, 'contextmenu', (evt: MouseEvent) => {
-					evt.preventDefault(); // Prevent default/Obsidian's menu for this element
-
+			const rootFolderElement = document.querySelector('.tree-item.nav-folder.oz-explorer-root-folder');
+			if (rootFolderElement) {
+				this.registerDomEvent(rootFolderElement as HTMLElement, 'contextmenu', (evt: MouseEvent) => {
+					evt.preventDefault();
 					const menu = new Menu();
 					menu.addItem((item) => {
 						item
-							.setTitle('Copy vault absolute path')
+							.setTitle('Copy absolute path')
 							.setIcon('copy')
 							.setSection('action')
 							.onClick(async () => {
@@ -86,20 +84,20 @@ export default class CopyAbsolutePathPlugin extends Plugin {
 									const vaultPath = adapter.getBasePath();
 									try {
 										await navigator.clipboard.writeText(vaultPath);
-										new Notice(`Copied vault path: ${vaultPath}`);
+										new Notice(`Copied path: ${vaultPath}`);
 									} catch (err) {
-										console.error('Failed to copy vault path:', err);
-										new Notice('Failed to copy vault path to clipboard.');
+										console.error('Failed to copy path:', err);
+										new Notice('Failed to copy path to clipboard.');
 									}
 								} else {
-									new Notice('Cannot get vault path: Vault is not using a file system adapter.');
+									new Notice('Cannot get path: vault is not using file system adapter');
 								}
 							});
 					});
 					menu.showAtMouseEvent(evt);
 				});
 			} else {
-				console.warn('Copy Absolute Path Plugin: .workspace-drawer-vault-switcher element not found.');
+				console.warn('Copy Absolute Path Plugin: .tree-item.nav-folder.oz-explorer-root-folder element not found.');
 			}
 		});
 	}
